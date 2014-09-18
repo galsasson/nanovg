@@ -16,11 +16,15 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
+//#define FONTSTASH_IMPLEMENTATION
+
+
 #include <stdio.h>
 #include <math.h>
 #include "nanovg.h"
-#define FONTSTASH_IMPLEMENTATION
-#include "fontstash.h"
+#ifdef FONTSTASH_IMPLEMENTATION
+  #include "fontstash.h"
+#endif
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -202,7 +206,9 @@ static void nvg__setDevicePixelRatio(NVGcontext* ctx, float ratio)
 
 NVGcontext* nvgCreateInternal(NVGparams* params)
 {
+#ifdef FONTSTASH_IMPLEMENTATION
 	FONSparams fontParams;
+#endif
 	NVGcontext* ctx = (NVGcontext*)malloc(sizeof(NVGcontext));
 	int i;
 	if (ctx == NULL) goto error;
@@ -227,6 +233,7 @@ NVGcontext* nvgCreateInternal(NVGparams* params)
 
 	if (ctx->params.renderCreate(ctx->params.userPtr) == 0) goto error;
 
+#ifdef FONTSTASH_IMPLEMENTATION
 	// Init font rendering
 	memset(&fontParams, 0, sizeof(fontParams));
 	fontParams.width = NVG_INIT_FONTIMAGE_SIZE;
@@ -244,6 +251,7 @@ NVGcontext* nvgCreateInternal(NVGparams* params)
 	ctx->fontImages[0] = ctx->params.renderCreateTexture(ctx->params.userPtr, NVG_TEXTURE_ALPHA, fontParams.width, fontParams.height, 0, NULL);
 	if (ctx->fontImages[0] == 0) goto error;
 	ctx->fontImageIdx = 0;
+#endif
 
 	return ctx;
 
@@ -264,8 +272,10 @@ void nvgDeleteInternal(NVGcontext* ctx)
 	if (ctx->commands != NULL) free(ctx->commands);
 	if (ctx->cache != NULL) nvg__deletePathCache(ctx->cache);
 
+#ifdef FONTSTASH_IMPLEMENTATION
 	if (ctx->fs)
 		fonsDeleteInternal(ctx->fs);
+#endif
 
 	for (i = 0; i < NVG_MAX_FONTIMAGES; i++) {
 		if (ctx->fontImages[i] != 0) {
@@ -2153,6 +2163,8 @@ void nvgStroke(NVGcontext* ctx)
 	}
 }
 
+#ifdef FONTSTASH_IMPLEMENTATION
+
 // Add fonts
 int nvgCreateFont(NVGcontext* ctx, const char* name, const char* path)
 {
@@ -2749,3 +2761,5 @@ void nvgTextMetrics(NVGcontext* ctx, float* ascender, float* descender, float* l
 		*lineh *= invscale;
 }
 // vim: ft=c nu noet ts=4
+
+#endif
