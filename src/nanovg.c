@@ -16,7 +16,7 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-//#define FONTSTASH_IMPLEMENTATION
+#define FONTSTASH_IMPLEMENTATION
 
 
 #include <stdio.h>
