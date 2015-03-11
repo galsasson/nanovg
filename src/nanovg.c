@@ -17,7 +17,7 @@
 //
 
 #define FONTSTASH_IMPLEMENTATION
-
+//#define TEXT_BOUNDS_USE_LINE_HEIGHT
 
 #include <stdio.h>
 #include <math.h>
@@ -2659,6 +2659,7 @@ float nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const
 	fonsSetFont(ctx->fs, state->fontId);
 
 	width = fonsTextBounds(ctx->fs, x*scale, y*scale, string, end, bounds);
+#ifdef TEXT_BOUNDS_USE_LINE_HEIGHT
 	if (bounds != NULL) {
 		// Use line bounds for height.
 		fonsLineBounds(ctx->fs, y*scale, &bounds[1], &bounds[3]);
@@ -2667,6 +2668,7 @@ float nvgTextBounds(NVGcontext* ctx, float x, float y, const char* string, const
 		bounds[2] *= invscale;
 		bounds[3] *= invscale;
 	}
+#endif
 	return width * invscale;
 }
 
