@@ -1053,7 +1053,15 @@ static void glnvg__triangles(GLNVGcontext* gl, GLNVGcall* call)
 	glnvg__setUniforms(gl, call->uniformOffset, call->image);
 	glnvg__checkError(gl, "triangles fill");
 
+#ifdef NVG_DISABLE_FACE_CULL_FOR_TRIANGLES
+	glDisable(GL_CULL_FACE);
+#endif
+
 	glDrawArrays(GL_TRIANGLES, call->triangleOffset, call->triangleCount);
+
+#ifdef NVG_DISABLE_FACE_CULL_FOR_TRIANGLES
+	glEnable(GL_CULL_FACE);
+#endif
 }
 
 static void glnvg__renderCancel(void* uptr) {
