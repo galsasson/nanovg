@@ -35,8 +35,8 @@
 #pragma warning(disable: 4706)  // assignment within conditional expression
 #endif
 
-#define NVG_INIT_FONTIMAGE_SIZE  1024
-#define NVG_MAX_FONTIMAGE_SIZE   2048
+#define NVG_INIT_FONTIMAGE_SIZE  2048
+#define NVG_MAX_FONTIMAGE_SIZE   4096
 #define NVG_MAX_FONTIMAGES       4
 
 #define NVG_INIT_COMMANDS_SIZE 256
