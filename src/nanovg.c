@@ -2054,6 +2054,32 @@ void nvgRoundedRect(NVGcontext* ctx, float x, float y, float w, float h, float r
 	}
 }
 
+void nvgRoundedRect4(NVGcontext* ctx, float x, float y, float w, float h, float r_tl, float r_tr, float r_br, float r_bl)
+{
+	float r_tl_x = nvg__minf(r_tl, nvg__absf(w)*0.5f) * nvg__signf(w);
+	float r_tl_y = nvg__minf(r_tl, nvg__absf(h)*0.5f) * nvg__signf(h);
+	float r_tr_x = nvg__minf(r_tr, nvg__absf(w)*0.5f) * nvg__signf(w);
+	float r_tr_y = nvg__minf(r_tr, nvg__absf(h)*0.5f) * nvg__signf(h);
+	float r_br_x = nvg__minf(r_br, nvg__absf(w)*0.5f) * nvg__signf(w);
+	float r_br_y = nvg__minf(r_br, nvg__absf(h)*0.5f) * nvg__signf(h);
+	float r_bl_x = nvg__minf(r_bl, nvg__absf(w)*0.5f) * nvg__signf(w);
+	float r_bl_y = nvg__minf(r_bl, nvg__absf(h)*0.5f) * nvg__signf(h);
+
+	float vals[] = {
+		NVG_MOVETO, x, y+r_tl_y,
+		NVG_LINETO, x, y+h-r_bl_y,
+		NVG_BEZIERTO, x, y+h-r_bl_y*(1-NVG_KAPPA90), x+r_bl_x*(1-NVG_KAPPA90), y+h, x+r_bl_x, y+h,
+		NVG_LINETO, x+w-r_br_x, y+h,
+		NVG_BEZIERTO, x+w-r_br_x*(1-NVG_KAPPA90), y+h, x+w, y+h-r_br_y*(1-NVG_KAPPA90), x+w, y+h-r_br_y,
+		NVG_LINETO, x+w, y+r_tr_y,
+		NVG_BEZIERTO, x+w, y+r_tr_y*(1-NVG_KAPPA90), x+w-r_tr_x*(1-NVG_KAPPA90), y, x+w-r_tr_x, y,
+		NVG_LINETO, x+r_tl_x, y,
+		NVG_BEZIERTO, x+r_tl_x*(1-NVG_KAPPA90), y, x, y+r_tl_y*(1-NVG_KAPPA90), x, y+r_tl_y,
+		NVG_CLOSE
+	};
+	nvg__appendCommands(ctx, vals, NVG_COUNTOF(vals));
+}
+
 void nvgEllipse(NVGcontext* ctx, float cx, float cy, float rx, float ry)
 {
 	float vals[] = {
