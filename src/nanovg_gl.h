@@ -1079,11 +1079,15 @@ static void glnvg__renderFlush(void* uptr)
 
 	if (gl->ncalls > 0) {
 
-		// Setup require GL state.
-		GLint oldProg;
+		// get previous value to bring state back
+		GLint oldProg, oldPolymode;
 		glGetIntegerv(GL_CURRENT_PROGRAM, &oldProg);
+		glGetIntegerv(GL_POLYGON_MODE, &oldPolymode);
+
+		// Setup require GL state.
 		glUseProgram(gl->shader.prog);
 
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
@@ -1150,6 +1154,7 @@ static void glnvg__renderFlush(void* uptr)
 		glDisable(GL_CULL_FACE);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glUseProgram(oldProg);
+		glPolygonMode(GL_FRONT_AND_BACK, oldPolymode);
 		glnvg__bindTexture(gl, 0);
 	}
 
