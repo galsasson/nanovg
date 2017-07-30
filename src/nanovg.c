@@ -2322,7 +2322,7 @@ static void nvg__renderText(NVGcontext* ctx, NVGvertex* verts, int nverts)
 	ctx->textTriCount += nverts/3;
 }
 
-float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char* end)
+float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char* end, bool rtl)
 {
 	NVGstate* state = nvg__getState(ctx);
 	FONStextIter iter, prevIter;
@@ -2330,7 +2330,7 @@ float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char*
 	NVGvertex* verts;
 	float scale = nvg__getFontScale(state) * ctx->devicePxRatio;
 	float invscale = 1.0f / scale;
-    float rtl = -1;
+    float rtlScale = rtl?-1:1;
 	int cverts = 0;
 	int nverts = 0;
 
@@ -2367,14 +2367,14 @@ float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char*
 		}
 		prevIter = iter;
 		// Trasnform corners.
-		nvgTransformPoint(&c[0],&c[1], state->xform, q.x0*invscale*rtl, q.y0*invscale);
-		nvgTransformPoint(&c[2],&c[3], state->xform, q.x1*invscale*rtl, q.y0*invscale);
-		nvgTransformPoint(&c[4],&c[5], state->xform, q.x1*invscale*rtl, q.y1*invscale);
-		nvgTransformPoint(&c[6],&c[7], state->xform, q.x0*invscale*rtl, q.y1*invscale);
+		nvgTransformPoint(&c[0],&c[1], state->xform, q.x0*invscale*rtlScale, q.y0*invscale);
+		nvgTransformPoint(&c[2],&c[3], state->xform, q.x1*invscale*rtlScale, q.y0*invscale);
+		nvgTransformPoint(&c[4],&c[5], state->xform, q.x1*invscale*rtlScale, q.y1*invscale);
+		nvgTransformPoint(&c[6],&c[7], state->xform, q.x0*invscale*rtlScale, q.y1*invscale);
 		// Create triangles
 		if (nverts+6 <= cverts) {
-            float f = rtl==-1?q.s1:q.s0;
-            float s = rtl==-1?q.s0:q.s1;
+            float f = rtl?q.s1:q.s0;
+            float s = rtl?q.s0:q.s1;
 			nvg__vset(&verts[nverts], c[0], c[1], f, q.t0); nverts++;
 			nvg__vset(&verts[nverts], c[4], c[5], s, q.t1); nverts++;
 			nvg__vset(&verts[nverts], c[2], c[3], s, q.t0); nverts++;
@@ -2392,7 +2392,7 @@ float nvgText(NVGcontext* ctx, float x, float y, const char* string, const char*
 	return iter.x;
 }
 
-void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const char* string, const char* end)
+void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const char* string, const char* end, bool rtl)
 {
 	NVGstate* state = nvg__getState(ctx);
 	NVGtextRow rows[2];
@@ -2412,11 +2412,11 @@ void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const ch
 		for (i = 0; i < nrows; i++) {
 			NVGtextRow* row = &rows[i];
 			if (haling & NVG_ALIGN_LEFT)
-				nvgText(ctx, x, y, row->start, row->end);
+				nvgText(ctx, x, y, row->start, row->end, rtl);
 			else if (haling & NVG_ALIGN_CENTER)
-				nvgText(ctx, x + breakRowWidth*0.5f - row->width*0.5f, y, row->start, row->end);
+				nvgText(ctx, x + breakRowWidth*0.5f - row->width*0.5f, y, row->start, row->end, rtl);
 			else if (haling & NVG_ALIGN_RIGHT)
-				nvgText(ctx, x + breakRowWidth - row->width, y, row->start, row->end);
+				nvgText(ctx, x + breakRowWidth - row->width, y, row->start, row->end, rtl);
 			y += lineh * state->lineHeight;
 		}
 		string = rows[nrows-1].next;
