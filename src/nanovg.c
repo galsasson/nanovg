@@ -2405,15 +2405,28 @@ void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const ch
 
 	state->textAlign = NVG_ALIGN_LEFT | valign;
 
+    char* stringBegin = string;
+    float longestRow = 0;
+    while ((nrows = nvgTextBreakLines(ctx, string, end, breakRowWidth, rows, 2))) {
+        for (i = 0; i < nrows; i++) {
+            NVGtextRow* row = &rows[i];
+            if (row->width > longestRow) {
+                longestRow = row->width;
+            }
+        }
+        string = rows[nrows-1].next;
+    }
+    string = stringBegin;
+
 	while ((nrows = nvgTextBreakLines(ctx, string, end, breakRowWidth, rows, 2))) {
 		for (i = 0; i < nrows; i++) {
 			NVGtextRow* row = &rows[i];
 			if (haling & NVG_ALIGN_LEFT)
 				nvgText(ctx, x, y, row->start, row->end);
 			else if (haling & NVG_ALIGN_CENTER)
-				nvgText(ctx, x + breakRowWidth*0.5f - row->width*0.5f, y, row->start, row->end);
+				nvgText(ctx, x + longestRow*0.5f - row->width*0.5f, y, row->start, row->end);
 			else if (haling & NVG_ALIGN_RIGHT)
-				nvgText(ctx, x + breakRowWidth - row->width, y, row->start, row->end);
+				nvgText(ctx, x + longestRow - row->width, y, row->start, row->end);
 			y += lineh * state->lineHeight;
 		}
 		string = rows[nrows-1].next;
@@ -2732,6 +2745,19 @@ void nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float breakRowWidth, co
 	fonsLineBounds(ctx->fs, 0, &rminy, &rmaxy);
 	rminy *= invscale;
 	rmaxy *= invscale;
+    
+    char* stringBegin = string;
+    float longestRow = 0;
+    while ((nrows = nvgTextBreakLines(ctx, string, end, breakRowWidth, rows, 2))) {
+        for (i = 0; i < nrows; i++) {
+            NVGtextRow* row = &rows[i];
+            if (row->width > longestRow) {
+                longestRow = row->width;
+            }
+        }
+        string = rows[nrows-1].next;
+    }
+    string = stringBegin;
 
 	while ((nrows = nvgTextBreakLines(ctx, string, end, breakRowWidth, rows, 2))) {
 		for (i = 0; i < nrows; i++) {
@@ -2741,9 +2767,9 @@ void nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float breakRowWidth, co
 			if (haling & NVG_ALIGN_LEFT)
 				dx = 0;
 			else if (haling & NVG_ALIGN_CENTER)
-				dx = breakRowWidth*0.5f - row->width*0.5f;
+				dx = longestRow*0.5f - row->width*0.5f;
 			else if (haling & NVG_ALIGN_RIGHT)
-				dx = breakRowWidth - row->width;
+				dx = longestRow - row->width;
 			rminx = x + row->minx + dx;
 			rmaxx = x + row->maxx + dx;
 			minx = nvg__minf(minx, rminx);
