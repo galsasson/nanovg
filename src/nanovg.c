@@ -2405,7 +2405,7 @@ void nvgTextBox(NVGcontext* ctx, float x, float y, float breakRowWidth, const ch
 
 	state->textAlign = NVG_ALIGN_LEFT | valign;
 
-    char* stringBegin = string;
+    char* stringBegin = (char*)string;
     float longestRow = 0;
     while ((nrows = nvgTextBreakLines(ctx, string, end, breakRowWidth, rows, 2))) {
         for (i = 0; i < nrows; i++) {
@@ -2746,7 +2746,7 @@ void nvgTextBoxBounds(NVGcontext* ctx, float x, float y, float breakRowWidth, co
 	rminy *= invscale;
 	rmaxy *= invscale;
     
-    char* stringBegin = string;
+    char* stringBegin = (char*)string;
     float longestRow = 0;
     while ((nrows = nvgTextBreakLines(ctx, string, end, breakRowWidth, rows, 2))) {
         for (i = 0; i < nrows; i++) {
