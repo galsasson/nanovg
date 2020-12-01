@@ -1081,11 +1081,11 @@ static void glnvg__renderFlush(void* uptr)
 
 		// get previous value to bring state back
 		GLint oldProg;
-		glGetIntegerv(GL_CURRENT_PROGRAM, &oldProg);
 #if defined(NANOVG_GL3)
 		GLint oldPolymode;
 		glGetIntegerv(GL_POLYGON_MODE, &oldPolymode);
 #endif
+		glGetIntegerv(GL_CURRENT_PROGRAM, &oldProg);
 
 		// Setup require GL state.
 		glUseProgram(gl->shader.prog);
