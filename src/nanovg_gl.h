@@ -1076,13 +1076,13 @@ static void glnvg__renderFlush(void* uptr)
 {
 	GLNVGcontext* gl = (GLNVGcontext*)uptr;
 	int i;
+	GLint oldProg;
+	GLint oldPolymode;
 
 	if (gl->ncalls > 0) {
 
 		// get previous value to bring state back
-		GLint oldProg;
 #if defined(NANOVG_GL3)
-		GLint oldPolymode;
 		glGetIntegerv(GL_POLYGON_MODE, &oldPolymode);
 #endif
 		glGetIntegerv(GL_CURRENT_PROGRAM, &oldProg);
